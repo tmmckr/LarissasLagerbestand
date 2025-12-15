@@ -113,3 +113,24 @@ button:active { transform: scale(0.98); }
     justify-content: center;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
+
+/* --- style.css ganz unten einfügen --- */
+
+/* Wenn der Artikel leer ist */
+.item-card.out-of-stock {
+    border: 2px solid #ff4757;  /* Roter Rahmen */
+    background-color: #ffe2e6;  /* Hellroter Hintergrund */
+    transform: scale(0.98);     /* Optional: Leicht verkleinert, sieht schick aus */
+}
+
+/* Die Zahl auch rot färben */
+.item-card.out-of-stock .count-display {
+    color: #ff4757;
+    font-weight: 900;
+}
+
+/* Optional: Den Minus-Button ausgrauen, wenn es eh schon 0 ist */
+.item-card.out-of-stock .control-btn:first-child {
+    opacity: 0.5;
+    pointer-events: none;
+}
