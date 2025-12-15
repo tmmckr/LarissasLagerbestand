@@ -48,22 +48,48 @@ onSnapshot(lagerCollection, (snapshot) => {
         const item = docSnap.data();
         const id = docSnap.id;
 
-        // HTML für eine Karte erstellen
-        const card = document.createElement('div');
-        card.className = 'item-card';
-        card.innerHTML = `
-            <div class="item-header">
-                <span>${item.name}</span>
-                <button class="delete-btn" onclick="deleteItem('${id}')"><i class="fas fa-trash"></i></button>
-            </div>
-            <div class="controls">
-                <button class="control-btn" onclick="updateStock('${id}', -1)"><i class="fas fa-minus"></i></button>
-                <span class="count-display">${item.count}</span>
-                <button class="control-btn" onclick="updateStock('${id}', 1)"><i class="fas fa-plus"></i></button>
-            </div>
-        `;
-        listContainer.appendChild(card);
-    });
+        // --- In der app.js innerhalb von onSnapshot(...) ---
+
+listContainer.innerHTML = ''; 
+
+snapshot.forEach((docSnap) => {
+    const item = docSnap.data();
+    const id = docSnap.id;
+
+    // PRÜFUNG: Ist der Bestand 0 oder weniger?
+    const isOutOfStock = item.count <= 0;
+    
+    // HTML Element erstellen
+    const card = document.createElement('div');
+    
+    // WENN leer -> Klasse "out-of-stock" hinzufügen, SONST nur "item-card"
+    card.className = isOutOfStock ? 'item-card out-of-stock' : 'item-card';
+
+    // Inhalt der Karte
+    // Wir ändern auch die Anzeige: Wenn 0, steht da "LEER" statt der Zahl
+    card.innerHTML = `
+        <div class="item-header">
+            <span>${item.name}</span>
+            <button class="delete-btn" onclick="deleteItem('${id}')">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+        <div class="controls">
+            <button class="control-btn" onclick="updateStock('${id}', -1)">
+                <i class="fas fa-minus"></i>
+            </button>
+            
+            <span class="count-display">
+                ${isOutOfStock ? 'NACHKAUFEN!' : item.count}
+            </span>
+            
+            <button class="control-btn" onclick="updateStock('${id}', 1)">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+    `;
+    listContainer.appendChild(card);
+});
 });
 
 // 3. Funktionen global verfügbar machen (für die onclick im HTML)
