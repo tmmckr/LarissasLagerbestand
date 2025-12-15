@@ -1,8 +1,10 @@
 :root {
-    --primary: #6c5ce7; /* Ein schönes Lila */
+    --primary: #6c5ce7;
     --bg: #f5f6fa;
     --card-bg: #ffffff;
     --text: #2d3436;
+    --danger: #ff4757;
+    --danger-bg: #ffe2e6;
 }
 
 body {
@@ -10,20 +12,53 @@ body {
     background-color: var(--bg);
     color: var(--text);
     margin: 0;
-    padding: 20px;
+    /* Weniger Rand auf Handys, mehr auf Laptops */
+    padding: 15px; 
 }
 
 .container {
     max-width: 800px;
     margin: 0 auto;
+    padding-bottom: 50px; /* Platz unten für Scrollen am Handy */
 }
 
 header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
 
-/* Eingabefeld Design */
+h1 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+/* --- Filter Bereich --- */
+.filter-area {
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    display: flex;
+    align-items: center;
+}
+
+.filter-area label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    width: 100%; /* Klickbereich vergrößern */
+}
+
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary);
+}
+
+/* --- Eingabefeld (Hinzufügen) --- */
 .input-group {
     background: var(--card-bg);
     padding: 20px;
@@ -32,19 +67,27 @@ header {
     display: flex;
     gap: 10px;
     margin-bottom: 30px;
+    /* Standard für Laptop: Nebeneinander */
+    flex-direction: row; 
+    align-items: center;
 }
 
-input {
+input[type="text"], input[type="number"] {
     padding: 12px;
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 16px;
+    outline: none;
 }
 
-#itemName { flex-grow: 1; }
-#itemCount { width: 80px; }
+input[type="text"]:focus, input[type="number"]:focus {
+    border-color: var(--primary);
+}
 
-button {
+#itemName { flex-grow: 1; } /* Nimmt restlichen Platz */
+#itemCount { width: 70px; text-align: center; }
+
+#addBtn {
     background: var(--primary);
     color: white;
     border: none;
@@ -52,41 +95,49 @@ button {
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
-    transition: transform 0.1s;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap; /* Text nicht umbrechen */
 }
 
-button:active { transform: scale(0.98); }
-
-/* Grid für die Lager-Items */
+/* --- Lager Liste (Grid) --- */
 .grid-layout {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+    /* Automatische Anpassung: Mindestens 100% Breite am Handy, sonst Spalten */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+    gap: 15px;
 }
 
 .item-card {
     background: var(--card-bg);
-    padding: 20px;
+    padding: 15px 20px;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    transition: transform 0.2s;
 }
 
 .item-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 15px;
     font-weight: bold;
     font-size: 1.1em;
+    word-break: break-word; /* Lange Wörter umbrechen */
 }
 
 .delete-btn {
     background: transparent;
+    border: none;
     color: #ff7675;
     padding: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
 }
 
 .controls {
@@ -98,39 +149,34 @@ button:active { transform: scale(0.98); }
     padding: 5px;
 }
 
+.control-btn {
+    background: white;
+    color: var(--text);
+    width: 40px; /* Größere Buttons für Touch */
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    cursor: pointer;
+    font-size: 1.1em;
+}
+
+.control-btn:active { transform: scale(0.95); }
+
 .count-display {
     font-weight: bold;
     font-size: 1.2em;
 }
 
-.control-btn {
-    background: white;
-    color: var(--text);
-    width: 35px;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-/* --- style.css ganz unten einfügen --- */
-
-/* Wenn der Artikel leer ist */
+/* --- Roter Bereich (Leer) --- */
 .item-card.out-of-stock {
-    border: 2px solid #ff4757;  /* Roter Rahmen */
-    background-color: #ffe2e6;  /* Hellroter Hintergrund */
-    transform: scale(0.98);     /* Optional: Leicht verkleinert, sieht schick aus */
+    border: 2px solid var(--danger);
+    background-color: var(--danger-bg);
 }
-
-/* Die Zahl auch rot färben */
 .item-card.out-of-stock .count-display {
-    color: #ff4757;
+    color: var(--danger);
     font-weight: 900;
-}
-
-/* Optional: Den Minus-Button ausgrauen, wenn es eh schon 0 ist */
-.item-card.out-of-stock .control-btn:first-child {
-    opacity: 0.5;
-    pointer-events: none;
-}
+    font-size: 1em; /* Text etwas kleiner,
