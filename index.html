@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Larissas Lagerbestand</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
@@ -15,11 +15,23 @@
         </header>
 
         <div class="category-tabs">
-            <button class="tab-btn active" data-tab="alle">Alle</button>
-            <button class="tab-btn" data-tab="Bad">Bad 🛁</button>
-            <button class="tab-btn" data-tab="Küche">Küche 🍳</button>
-            <button class="tab-btn" data-tab="Vorrat">Vorrat 🥫</button>
-            <button class="tab-btn" data-tab="Sonstiges">Sonstiges 📦</button>
+            <button class="tab-btn active" data-tab="alle">
+                Alle
+            </button>
+            <button class="tab-btn" data-tab="Bad">
+                Bad <i class="fas fa-bath"></i>
+            </button>
+            <button class="tab-btn" data-tab="Hygiene">
+                Hygiene <i class="fas fa-pump-soap"></i> </button>
+            <button class="tab-btn" data-tab="Küche">
+                Küche <i class="fas fa-utensils"></i>
+            </button>
+            <button class="tab-btn" data-tab="Vorrat">
+                Vorrat <i class="fas fa-box-open"></i>
+            </button>
+            <button class="tab-btn" data-tab="Sonstiges">
+                Sonstiges <i class="fas fa-cubes"></i>
+            </button>
         </div>
 
         <div class="filter-area">
@@ -34,7 +46,7 @@
             
             <select id="itemCategory">
                 <option value="Bad">Bad</option>
-                <option value="Küche">Küche</option>
+                <option value="Hygiene">Hygiene</option> <option value="Küche">Küche</option>
                 <option value="Vorrat">Vorrat</option>
                 <option value="Sonstiges">Sonstiges</option>
             </select>
