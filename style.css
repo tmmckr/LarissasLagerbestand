@@ -1,10 +1,14 @@
+/* --- 1. Variablen definieren (Standard = Hell) --- */
 :root {
     --primary: #6c5ce7;
     --bg: #f5f6fa;
     --card-bg: #ffffff;
     --text: #2d3436;
+    --text-muted: #636e72;
     --danger: #ff4757;
     --danger-bg: #ffe2e6;
+    --input-bg: #ffffff;
+    --border: #ddd;
 }
 
 body {
@@ -285,4 +289,67 @@ input[type="text"]:focus, input[type="number"]:focus {
     .grid-layout {
         grid-template-columns: 1fr;
     }
+}
+
+/* --- 2. Variablen überschreiben für Dark Mode --- */
+body.dark-mode {
+    --bg: #1e272e;        /* Sehr dunkles Grau-Blau */
+    --card-bg: #2d3436;   /* Etwas helleres Dunkelgrau */
+    --text: #dfe6e9;      /* Fast Weiß (angenehmer als reines Weiß) */
+    --text-muted: #b2bec3;
+    --danger: #ff6b81;    /* Helleres Rot für besseren Kontrast */
+    --danger-bg: rgba(255, 71, 87, 0.2); /* Transparentes Rot */
+    --input-bg: #2d3436;
+    --border: #4b6584;
+}
+
+/* Weicher Übergang beim Umschalten */
+body, .item-card, input, select, button {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* --- 3. Styling für den Schalter im Header --- */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative; /* Wichtig für die Positionierung des Buttons */
+    display: flex;      /* Damit Titel und Button nebeneinander können */
+    justify-content: center;
+    align-items: center;
+}
+
+#darkModeToggle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: transparent;
+    border: 2px solid var(--text); /* Passt sich der Textfarbe an */
+    color: var(--text);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#darkModeToggle:hover {
+    background: var(--text);
+    color: var(--bg); /* Invertiert beim Drüberfahren */
+}
+
+/* --- 4. Inputs im Darkmode anpassen --- */
+input, select {
+    background-color: var(--input-bg);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+/* Kategorie Tabs im Darkmode */
+.tab-btn {
+    background-color: var(--card-bg);
+    color: var(--text);
+    border-color: var(--border);
 }
