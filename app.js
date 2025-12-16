@@ -316,7 +316,7 @@ whatsappBtn.addEventListener('click', () => {
 
     // 3. WhatsApp öffnen
     // encodeURIComponent macht den Text internet-tauglich (Leerzeichen werden zu %20 etc.)
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/4915161455644?text=${encodeURIComponent(message)}`;
     
     // In neuem Tab öffnen
     window.open(whatsappUrl, '_blank');
