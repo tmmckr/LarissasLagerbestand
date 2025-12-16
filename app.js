@@ -155,7 +155,7 @@ if(whatsappBtn) {
             message += `- ${itemName}\n`;
         });
         message += "\nDanke! 🛒";
-        window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+        window.open(`https://wa.me/4915161455644?text=${encodeURIComponent(message)}`, '_blank');
     });
 }
 
