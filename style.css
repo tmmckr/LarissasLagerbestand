@@ -417,3 +417,47 @@ body.dark-mode .scanner-container {
     background: var(--card-bg);
     color: var(--text);
 }
+
+/* --- WhatsApp Button Styles --- */
+
+/* Damit Checkbox und Button schön nebeneinander stehen */
+.filter-area {
+    display: flex;
+    justify-content: space-between; /* Links Checkbox, rechts Button */
+    align-items: center;
+    flex-wrap: wrap; /* Umbruch auf kleinen Handys */
+    gap: 15px;
+}
+
+.whatsapp-btn {
+    background-color: #25D366; /* Original WhatsApp Grün */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    transition: transform 0.2s, background-color 0.2s;
+    text-decoration: none; /* Falls wir es als Link nutzen */
+}
+
+.whatsapp-btn:hover {
+    background-color: #128C7E; /* Dunkleres Grün beim Drüberfahren */
+    transform: scale(1.05);
+}
+
+.whatsapp-btn i {
+    font-size: 1.2em;
+}
+
+/* Anpassung für Mobile: Button auf volle Breite */
+@media (max-width: 600px) {
+    .whatsapp-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
