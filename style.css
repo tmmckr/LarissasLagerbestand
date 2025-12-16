@@ -12,7 +12,7 @@ body {
     background-color: var(--bg);
     color: var(--text);
     margin: 0;
-    /* Weniger Rand auf Handys, mehr auf Laptops */
+    /* Weniger Rand auf Handys, mehr auf Laptop */
     padding: 15px; 
 }
 
