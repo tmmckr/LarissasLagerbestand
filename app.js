@@ -149,3 +149,40 @@ window.deleteItem = async (id) => {
         await deleteDoc(doc(db, "lagerbestand", id));
     }
 };
+
+// --- DARK MODE LOGIK ---
+
+const toggleBtn = document.getElementById('darkModeToggle');
+const body = document.body;
+const icon = toggleBtn.querySelector('i');
+
+// 1. Beim Laden prüfen: Hat der Nutzer schon eine Einstellung gespeichert?
+const currentMode = localStorage.getItem('theme');
+
+if (currentMode === 'dark') {
+    enableDarkMode();
+}
+
+// 2. Klick-Event
+toggleBtn.addEventListener('click', () => {
+    if (body.classList.contains('dark-mode')) {
+        disableDarkMode();
+    } else {
+        enableDarkMode();
+    }
+});
+
+// Hilfsfunktionen
+function enableDarkMode() {
+    body.classList.add('dark-mode');
+    localStorage.setItem('theme', 'dark'); // Speichern
+    icon.classList.remove('fa-moon');      // Mond weg
+    icon.classList.add('fa-sun');          // Sonne hin
+}
+
+function disableDarkMode() {
+    body.classList.remove('dark-mode');
+    localStorage.setItem('theme', 'light'); // Speichern
+    icon.classList.remove('fa-sun');        // Sonne weg
+    icon.classList.add('fa-moon');          // Mond hin
+}
