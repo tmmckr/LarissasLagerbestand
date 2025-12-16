@@ -353,3 +353,67 @@ input, select {
     color: var(--text);
     border-color: var(--border);
 }
+
+/* --- Barcode Scanner Styles --- */
+
+/* Der Scan-Button neben dem Input */
+#scanBtn {
+    background: var(--text-muted); /* Dezentes Grau */
+    color: white;
+    padding: 0 15px; /* Etwas schmaler */
+    width: auto !important; /* Überschreibt die Mobile-Breite */
+}
+
+/* Das Vollbild-Overlay */
+#scanner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9); /* Fast schwarz */
+    z-index: 1000; /* Ganz oben */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Klasse zum Verstecken */
+.hidden {
+    display: none !important;
+}
+
+/* Die Box in der Mitte */
+.scanner-container {
+    width: 90%;
+    max-width: 500px;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+/* Der Bereich für das Video */
+#reader {
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+/* Button zum Schließen */
+#closeScanner {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Darkmode Anpassung für Scanner */
+body.dark-mode .scanner-container {
+    background: var(--card-bg);
+    color: var(--text);
+}
