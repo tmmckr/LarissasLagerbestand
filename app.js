@@ -186,3 +186,94 @@ function disableDarkMode() {
     icon.classList.remove('fa-sun');        // Sonne weg
     icon.classList.add('fa-moon');          // Mond hin
 }
+
+// ==========================================
+// === BARCODE SCANNER LOGIK ===
+// ==========================================
+
+const scanBtn = document.getElementById('scanBtn');
+const closeScannerBtn = document.getElementById('closeScanner');
+const scannerOverlay = document.getElementById('scanner-overlay');
+let html5QrcodeScanner = null;
+
+// API URL für Produktdaten
+const API_URL = "https://world.openfoodfacts.org/api/v0/product/";
+
+// 1. Scanner starten
+scanBtn.addEventListener('click', () => {
+    scannerOverlay.classList.remove('hidden');
+    
+    // Scanner initialisieren
+    html5QrcodeScanner = new Html5Qrcode("reader");
+    
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+    
+    // Kamera starten (Rückkamera bevorzugen)
+    html5QrcodeScanner.start({ facingMode: "environment" }, config, onScanSuccess);
+});
+
+// 2. Wenn ein Code erkannt wurde
+async function onScanSuccess(decodedText, decodedResult) {
+    // Piepton oder Vibration wäre hier cool
+    if (navigator.vibrate) navigator.vibrate(200);
+
+    console.log(`Code gescannt: ${decodedText}`);
+    
+    // Scanner sofort stoppen und schließen
+    stopScanner();
+
+    // Nutzer-Feedback: "Lade..."
+    itemNameInput.value = "Lade Produktdaten...";
+    itemNameInput.disabled = true;
+
+    try {
+        // Produktdaten von OpenFoodFacts abrufen
+        const response = await fetch(API_URL + decodedText + ".json");
+        const data = await response.json();
+
+        if (data.status === 1 && data.product) {
+            // Treffer! Name holen (manchmal heißt es product_name_de oder generic_name)
+            const productName = data.product.product_name_de || data.product.product_name || data.product.generic_name;
+            
+            itemNameInput.value = productName || "Unbekanntes Produkt";
+            
+            // Bonus: Versuchen, das Bild zu holen (optional)
+            // console.log(data.product.image_url); 
+            
+            // Kategorie raten? (Simpel)
+            if(data.product.categories_tags) {
+               const tags = data.product.categories_tags.join(' ');
+               if(tags.includes('hygiene') || tags.includes('beauty')) {
+                   itemCategoryInput.value = 'Hygiene';
+               } else if(tags.includes('food') || tags.includes('snack')) {
+                   itemCategoryInput.value = 'Vorrat';
+               }
+            }
+
+        } else {
+            // Produkt nicht gefunden -> Barcode als Name eintragen
+            itemNameInput.value = decodedText;
+            alert("Produkt nicht in der Datenbank gefunden, Barcode eingetragen.");
+        }
+    } catch (error) {
+        console.error("Fehler beim Abrufen:", error);
+        itemNameInput.value = decodedText; // Fallback auf Barcode
+    } finally {
+        itemNameInput.disabled = false;
+        itemNameInput.focus(); // Fokus ins Feld, damit man Menge eintippen kann
+    }
+}
+
+// 3. Scanner stoppen (Abbrechen oder Erfolg)
+function stopScanner() {
+    if (html5QrcodeScanner) {
+        html5QrcodeScanner.stop().then(() => {
+            scannerOverlay.classList.add('hidden');
+            html5QrcodeScanner.clear();
+        }).catch(err => console.log("Stop failed: ", err));
+    } else {
+        scannerOverlay.classList.add('hidden');
+    }
+}
+
+closeScannerBtn.addEventListener('click', stopScanner);
