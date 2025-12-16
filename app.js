@@ -1,4 +1,3 @@
-// Importiere die Funktionen
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -19,29 +18,33 @@ const lagerCollection = collection(db, "lagerbestand");
 // DOM Elemente
 const itemNameInput = document.getElementById('itemName');
 const itemCountInput = document.getElementById('itemCount');
-const itemCategoryInput = document.getElementById('itemCategory'); // NEU
+const itemCategoryInput = document.getElementById('itemCategory');
+const itemImageInput = document.getElementById('itemImage'); // NEU
 const addBtn = document.getElementById('addBtn');
 const listContainer = document.getElementById('inventory-list');
 
-// Globale Variable für aktuellen Filter
 let currentCategoryFilter = 'alle';
 
-// 1. Hinzufügen (Jetzt mit Kategorie)
+// 1. Hinzufügen (Jetzt mit BILD!)
 addBtn.addEventListener('click', async () => {
     const name = itemNameInput.value;
     const count = parseInt(itemCountInput.value);
-    const category = itemCategoryInput.value; // Wert aus Dropdown
+    const category = itemCategoryInput.value;
+    const imageUrl = itemImageInput.value; // Bild URL holen
 
     if (name && count) {
         try {
             await addDoc(lagerCollection, {
                 name: name,
                 count: count,
-                category: category, // Speichern
+                category: category,
+                image: imageUrl, // Bild mitspeichern
                 createdAt: new Date()
             });
+            // Reset
             itemNameInput.value = ''; 
             itemCountInput.value = '1';
+            itemImageInput.value = ''; // Bild-Speicher leeren
         } catch (error) {
             console.error("Fehler: ", error);
         }
@@ -50,7 +53,7 @@ addBtn.addEventListener('click', async () => {
     }
 });
 
-// 2. Liste anzeigen
+// 2. Liste anzeigen (Jetzt mit Bild-Anzeige)
 onSnapshot(lagerCollection, (snapshot) => {
     listContainer.innerHTML = ''; 
 
@@ -58,27 +61,29 @@ onSnapshot(lagerCollection, (snapshot) => {
         const item = docSnap.data();
         const id = docSnap.id;
         const isOutOfStock = item.count <= 0;
-        
-        // Fallback für alte Items ohne Kategorie
         const category = item.category || 'Sonstiges';
 
         const card = document.createElement('div');
-        
-        // WICHTIG: Wir speichern die Kategorie als Daten-Attribut im HTML
-        card.dataset.category = category; 
-        
+        card.dataset.category = category;
         card.className = isOutOfStock ? 'item-card out-of-stock' : 'item-card';
 
-        // Wir prüfen sofort, ob das Item zur aktuellen Auswahl passt
         if (currentCategoryFilter !== 'alle' && category !== currentCategoryFilter) {
             card.style.display = 'none';
         }
 
+        // Bild-HTML bauen (nur wenn ein Bild da ist)
+        let imageHtml = '';
+        if (item.image) {
+            imageHtml = `<img src="${item.image}" alt="Produktbild" style="width: 50px; height: 50px; object-fit: contain; border-radius: 5px; margin-right: 10px;">`;
+        }
+
         card.innerHTML = `
             <div class="item-header">
-                <div>
-                    <span class="category-badge">${category}</span><br>
-                    <span>${item.name}</span>
+                <div style="display: flex; align-items: center;">
+                    ${imageHtml} <div>
+                        <span class="category-badge">${category}</span><br>
+                        <span>${item.name}</span>
+                    </div>
                 </div>
                 <button class="delete-btn" onclick="deleteItem('${id}')">
                     <i class="fas fa-trash"></i>
@@ -102,31 +107,25 @@ onSnapshot(lagerCollection, (snapshot) => {
 
 // 3. Tab-Filter Logik
 const tabs = document.querySelectorAll('.tab-btn');
-
 tabs.forEach(tab => {
     tab.addEventListener('click', () => {
-        // 1. Aktiven Button markieren
         tabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
-
-        // 2. Filter setzen
         currentCategoryFilter = tab.dataset.tab;
-
-        // 3. Alle Karten durchgehen und ein/ausblenden
+        
         const cards = document.querySelectorAll('.item-card');
         cards.forEach(card => {
             const cardCat = card.dataset.category;
-            
             if (currentCategoryFilter === 'alle' || cardCat === currentCategoryFilter) {
-                card.style.display = 'flex'; // Anzeigen (da wir flexbox nutzen)
+                card.style.display = 'flex';
             } else {
-                card.style.display = 'none'; // Verstecken
+                card.style.display = 'none';
             }
         });
     });
 });
 
-// Filter-Funktion (Einkaufsliste / Rot)
+// Filter Checkbox
 const filterCheckbox = document.getElementById('showMissingOnly');
 if(filterCheckbox) {
     filterCheckbox.addEventListener('change', (e) => {
@@ -138,186 +137,127 @@ if(filterCheckbox) {
     });
 }
 
-// Globale Funktionen
-window.updateStock = async (id, amount) => {
-    const itemRef = doc(db, "lagerbestand", id);
-    await updateDoc(itemRef, { count: increment(amount) });
-};
+// WhatsApp Button
+const whatsappBtn = document.getElementById('whatsappBtn');
+if(whatsappBtn) {
+    whatsappBtn.addEventListener('click', () => {
+        const emptyCards = document.querySelectorAll('.item-card.out-of-stock');
+        if (emptyCards.length === 0) {
+            alert("Alles voll! 🎉"); return;
+        }
+        let message = "👋 Einkaufsliste für Larissas Lager:\n\n";
+        emptyCards.forEach(card => {
+            // Namen finden (etwas komplexer jetzt wegen Bild)
+            // Wir suchen das zweite span im Header-Div
+            const textDiv = card.querySelector('.item-header > div > div'); // Das div neben dem Bild
+            const spans = textDiv.querySelectorAll('span');
+            const itemName = spans[1].innerText; // Der Name ist das 2. Span (nach Badge)
+            message += `- ${itemName}\n`;
+        });
+        message += "\nDanke! 🛒";
+        window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+    });
+}
 
-window.deleteItem = async (id) => {
-    if(confirm("Löschen?")) {
-        await deleteDoc(doc(db, "lagerbestand", id));
-    }
-};
-
-// --- DARK MODE LOGIK ---
-
+// Dark Mode
 const toggleBtn = document.getElementById('darkModeToggle');
 const body = document.body;
-const icon = toggleBtn.querySelector('i');
+if(toggleBtn) {
+    const icon = toggleBtn.querySelector('i');
+    if (localStorage.getItem('theme') === 'dark') enableDarkMode();
+    
+    toggleBtn.addEventListener('click', () => {
+        if (body.classList.contains('dark-mode')) disableDarkMode();
+        else enableDarkMode();
+    });
 
-// 1. Beim Laden prüfen: Hat der Nutzer schon eine Einstellung gespeichert?
-const currentMode = localStorage.getItem('theme');
-
-if (currentMode === 'dark') {
-    enableDarkMode();
-}
-
-// 2. Klick-Event
-toggleBtn.addEventListener('click', () => {
-    if (body.classList.contains('dark-mode')) {
-        disableDarkMode();
-    } else {
-        enableDarkMode();
+    function enableDarkMode() {
+        body.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark');
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
     }
-});
-
-// Hilfsfunktionen
-function enableDarkMode() {
-    body.classList.add('dark-mode');
-    localStorage.setItem('theme', 'dark'); // Speichern
-    icon.classList.remove('fa-moon');      // Mond weg
-    icon.classList.add('fa-sun');          // Sonne hin
+    function disableDarkMode() {
+        body.classList.remove('dark-mode');
+        localStorage.setItem('theme', 'light');
+        icon.classList.remove('fa-sun');
+        icon.classList.add('fa-moon');
+    }
 }
 
-function disableDarkMode() {
-    body.classList.remove('dark-mode');
-    localStorage.setItem('theme', 'light'); // Speichern
-    icon.classList.remove('fa-sun');        // Sonne weg
-    icon.classList.add('fa-moon');          // Mond hin
-}
-
-// ==========================================
-// === BARCODE SCANNER LOGIK ===
-// ==========================================
+// ================= SCANNNER LOGIK =================
 
 const scanBtn = document.getElementById('scanBtn');
 const closeScannerBtn = document.getElementById('closeScanner');
 const scannerOverlay = document.getElementById('scanner-overlay');
 let html5QrcodeScanner = null;
-
-// API URL für Produktdaten
 const API_URL = "https://world.openfoodfacts.org/api/v0/product/";
 
-// 1. Scanner starten
-scanBtn.addEventListener('click', () => {
-    scannerOverlay.classList.remove('hidden');
-    
-    // Scanner initialisieren
-    html5QrcodeScanner = new Html5Qrcode("reader");
-    
-    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-    
-    // Kamera starten (Rückkamera bevorzugen)
-    html5QrcodeScanner.start({ facingMode: "environment" }, config, onScanSuccess);
-});
+if(scanBtn) {
+    scanBtn.addEventListener('click', () => {
+        scannerOverlay.classList.remove('hidden');
+        html5QrcodeScanner = new Html5Qrcode("reader");
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+        html5QrcodeScanner.start({ facingMode: "environment" }, config, onScanSuccess);
+    });
+}
 
-// 2. Wenn ein Code erkannt wurde
 async function onScanSuccess(decodedText, decodedResult) {
-    // Piepton oder Vibration wäre hier cool
     if (navigator.vibrate) navigator.vibrate(200);
-
-    console.log(`Code gescannt: ${decodedText}`);
-    
-    // Scanner sofort stoppen und schließen
     stopScanner();
 
-    // Nutzer-Feedback: "Lade..."
-    itemNameInput.value = "Lade Produktdaten...";
+    itemNameInput.value = "Lade...";
     itemNameInput.disabled = true;
 
     try {
-        // Produktdaten von OpenFoodFacts abrufen
         const response = await fetch(API_URL + decodedText + ".json");
         const data = await response.json();
 
         if (data.status === 1 && data.product) {
-            // Treffer! Name holen (manchmal heißt es product_name_de oder generic_name)
             const productName = data.product.product_name_de || data.product.product_name || data.product.generic_name;
+            itemNameInput.value = productName || "Unbekannt";
             
-            itemNameInput.value = productName || "Unbekanntes Produkt";
-            
-            // Bonus: Versuchen, das Bild zu holen (optional)
-            // console.log(data.product.image_url); 
-            
-            // Kategorie raten? (Simpel)
+            // --- HIER HOLEN WIR DAS BILD ---
+            // Wir nehmen das kleine Thumbnail
+            const img = data.product.image_front_small_url || data.product.image_small_url || '';
+            itemImageInput.value = img; // In das versteckte Feld speichern
+
+            // Kategorie raten
             if(data.product.categories_tags) {
                const tags = data.product.categories_tags.join(' ');
-               if(tags.includes('hygiene') || tags.includes('beauty')) {
-                   itemCategoryInput.value = 'Hygiene';
-               } else if(tags.includes('food') || tags.includes('snack')) {
-                   itemCategoryInput.value = 'Vorrat';
-               }
+               if(tags.includes('hygiene') || tags.includes('beauty')) itemCategoryInput.value = 'Hygiene';
+               else if(tags.includes('food') || tags.includes('snack')) itemCategoryInput.value = 'Vorrat';
             }
-
         } else {
-            // Produkt nicht gefunden -> Barcode als Name eintragen
             itemNameInput.value = decodedText;
-            alert("Produkt nicht in der Datenbank gefunden, Barcode eingetragen.");
+            alert("Produkt nicht gefunden.");
         }
     } catch (error) {
-        console.error("Fehler beim Abrufen:", error);
-        itemNameInput.value = decodedText; // Fallback auf Barcode
+        console.error(error);
+        itemNameInput.value = decodedText;
     } finally {
         itemNameInput.disabled = false;
-        itemNameInput.focus(); // Fokus ins Feld, damit man Menge eintippen kann
+        itemNameInput.focus();
     }
 }
 
-// 3. Scanner stoppen (Abbrechen oder Erfolg)
 function stopScanner() {
     if (html5QrcodeScanner) {
         html5QrcodeScanner.stop().then(() => {
             scannerOverlay.classList.add('hidden');
             html5QrcodeScanner.clear();
-        }).catch(err => console.log("Stop failed: ", err));
+        }).catch(err => console.log(err));
     } else {
         scannerOverlay.classList.add('hidden');
     }
 }
+if(closeScannerBtn) closeScannerBtn.addEventListener('click', stopScanner);
 
-closeScannerBtn.addEventListener('click', stopScanner);
-
-// ==========================================
-// === WHATSAPP TEILEN FUNKTION ===
-// ==========================================
-
-const whatsappBtn = document.getElementById('whatsappBtn');
-
-whatsappBtn.addEventListener('click', () => {
-    // 1. Alle roten (leeren) Karten im HTML suchen
-    // Wir nehmen direkt die aus dem HTML, das ist am einfachsten
-    const emptyCards = document.querySelectorAll('.item-card.out-of-stock');
-    
-    if (emptyCards.length === 0) {
-        alert("Alles voll! Nichts zum Einkaufen da. 🎉");
-        return;
-    }
-
-    // 2. Text zusammenbauen
-    let message = "👋 Hallo! Bitte für das Lager mitbringen:\n\n";
-
-    emptyCards.forEach(card => {
-        // Den Namen aus dem Header der Karte holen
-        // Wir müssen etwas navigieren: .item-header -> div -> span (der zweite span ist der Name)
-        // Einfacher: Wir holen den Textinhalt des Namens-Spans
-        
-        // Da deine Struktur im Header so aussieht:
-        // <div> <span badge>...</span> <br> <span>NAME</span> </div>
-        // Holen wir uns alle spans und nehmen den letzten im Header-Div
-        const headerDiv = card.querySelector('.item-header > div');
-        const nameSpan = headerDiv.querySelectorAll('span'); 
-        const itemName = nameSpan[nameSpan.length - 1].innerText; // Der letzte Span ist der Name
-
-        message += `- ${itemName}\n`;
-    });
-
-    message += "\nDanke! 🛒";
-
-    // 3. WhatsApp öffnen
-    // encodeURIComponent macht den Text internet-tauglich (Leerzeichen werden zu %20 etc.)
-    const whatsappUrl = `https://wa.me/4915161455644?text=${encodeURIComponent(message)}`;
-    
-    // In neuem Tab öffnen
-    window.open(whatsappUrl, '_blank');
-});
+// Global
+window.updateStock = async (id, amount) => {
+    const itemRef = doc(db, "lagerbestand", id);
+    await updateDoc(itemRef, { count: increment(amount) });
+};
+window.deleteItem = async (id) => {
+    if(confirm("Löschen?")) await deleteDoc(doc(db, "lagerbestand", id));
+};
