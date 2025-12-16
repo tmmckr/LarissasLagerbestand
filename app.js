@@ -277,3 +277,47 @@ function stopScanner() {
 }
 
 closeScannerBtn.addEventListener('click', stopScanner);
+
+// ==========================================
+// === WHATSAPP TEILEN FUNKTION ===
+// ==========================================
+
+const whatsappBtn = document.getElementById('whatsappBtn');
+
+whatsappBtn.addEventListener('click', () => {
+    // 1. Alle roten (leeren) Karten im HTML suchen
+    // Wir nehmen direkt die aus dem HTML, das ist am einfachsten
+    const emptyCards = document.querySelectorAll('.item-card.out-of-stock');
+    
+    if (emptyCards.length === 0) {
+        alert("Alles voll! Nichts zum Einkaufen da. 🎉");
+        return;
+    }
+
+    // 2. Text zusammenbauen
+    let message = "👋 Hallo! Bitte für das Lager mitbringen:\n\n";
+
+    emptyCards.forEach(card => {
+        // Den Namen aus dem Header der Karte holen
+        // Wir müssen etwas navigieren: .item-header -> div -> span (der zweite span ist der Name)
+        // Einfacher: Wir holen den Textinhalt des Namens-Spans
+        
+        // Da deine Struktur im Header so aussieht:
+        // <div> <span badge>...</span> <br> <span>NAME</span> </div>
+        // Holen wir uns alle spans und nehmen den letzten im Header-Div
+        const headerDiv = card.querySelector('.item-header > div');
+        const nameSpan = headerDiv.querySelectorAll('span'); 
+        const itemName = nameSpan[nameSpan.length - 1].innerText; // Der letzte Span ist der Name
+
+        message += `- ${itemName}\n`;
+    });
+
+    message += "\nDanke! 🛒";
+
+    // 3. WhatsApp öffnen
+    // encodeURIComponent macht den Text internet-tauglich (Leerzeichen werden zu %20 etc.)
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    
+    // In neuem Tab öffnen
+    window.open(whatsappUrl, '_blank');
+});
