@@ -12,62 +12,74 @@ const firebaseConfig = {
   appId: "1:279838975740:web:50abf932ec6e04ac5b1979"
 };
 
-// Initialisieren
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const lagerCollection = collection(db, "lagerbestand");
 
-// DOM Elemente holen
+// DOM Elemente
 const itemNameInput = document.getElementById('itemName');
 const itemCountInput = document.getElementById('itemCount');
+const itemCategoryInput = document.getElementById('itemCategory'); // NEU
 const addBtn = document.getElementById('addBtn');
 const listContainer = document.getElementById('inventory-list');
 
-// 1. Funktion: Neues Item hinzufügen
+// Globale Variable für aktuellen Filter
+let currentCategoryFilter = 'alle';
+
+// 1. Hinzufügen (Jetzt mit Kategorie)
 addBtn.addEventListener('click', async () => {
     const name = itemNameInput.value;
     const count = parseInt(itemCountInput.value);
+    const category = itemCategoryInput.value; // Wert aus Dropdown
 
     if (name && count) {
         try {
             await addDoc(lagerCollection, {
                 name: name,
                 count: count,
+                category: category, // Speichern
                 createdAt: new Date()
             });
-            // Felder leeren nach Erfolg
             itemNameInput.value = ''; 
             itemCountInput.value = '1';
         } catch (error) {
-            console.error("Fehler beim Hinzufügen: ", error);
-            alert("Fehler: " + error.message);
+            console.error("Fehler: ", error);
         }
     } else {
         alert("Bitte Namen und Menge eingeben!");
     }
 });
 
-// 2. Funktion: Echtzeit-Liste anzeigen (inkl. roter Markierung)
+// 2. Liste anzeigen
 onSnapshot(lagerCollection, (snapshot) => {
-    listContainer.innerHTML = ''; // Liste leeren
+    listContainer.innerHTML = ''; 
 
     snapshot.forEach((docSnap) => {
         const item = docSnap.data();
         const id = docSnap.id;
-
-        // PRÜFUNG: Ist der Bestand 0 oder weniger?
         const isOutOfStock = item.count <= 0;
         
-        // HTML Element erstellen
+        // Fallback für alte Items ohne Kategorie
+        const category = item.category || 'Sonstiges';
+
         const card = document.createElement('div');
         
-        // Klasse setzen (rot wenn leer)
+        // WICHTIG: Wir speichern die Kategorie als Daten-Attribut im HTML
+        card.dataset.category = category; 
+        
         card.className = isOutOfStock ? 'item-card out-of-stock' : 'item-card';
 
-        // Inhalt der Karte
+        // Wir prüfen sofort, ob das Item zur aktuellen Auswahl passt
+        if (currentCategoryFilter !== 'alle' && category !== currentCategoryFilter) {
+            card.style.display = 'none';
+        }
+
         card.innerHTML = `
             <div class="item-header">
-                <span>${item.name}</span>
+                <div>
+                    <span class="category-badge">${category}</span><br>
+                    <span>${item.name}</span>
+                </div>
                 <button class="delete-btn" onclick="deleteItem('${id}')">
                     <i class="fas fa-trash"></i>
                 </button>
@@ -76,11 +88,9 @@ onSnapshot(lagerCollection, (snapshot) => {
                 <button class="control-btn" onclick="updateStock('${id}', -1)">
                     <i class="fas fa-minus"></i>
                 </button>
-                
                 <span class="count-display">
                     ${isOutOfStock ? 'NACHKAUFEN!' : item.count}
                 </span>
-                
                 <button class="control-btn" onclick="updateStock('${id}', 1)">
                     <i class="fas fa-plus"></i>
                 </button>
@@ -90,7 +100,33 @@ onSnapshot(lagerCollection, (snapshot) => {
     });
 });
 
-// Filter-Funktion (Checkbox)
+// 3. Tab-Filter Logik
+const tabs = document.querySelectorAll('.tab-btn');
+
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        // 1. Aktiven Button markieren
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        // 2. Filter setzen
+        currentCategoryFilter = tab.dataset.tab;
+
+        // 3. Alle Karten durchgehen und ein/ausblenden
+        const cards = document.querySelectorAll('.item-card');
+        cards.forEach(card => {
+            const cardCat = card.dataset.category;
+            
+            if (currentCategoryFilter === 'alle' || cardCat === currentCategoryFilter) {
+                card.style.display = 'flex'; // Anzeigen (da wir flexbox nutzen)
+            } else {
+                card.style.display = 'none'; // Verstecken
+            }
+        });
+    });
+});
+
+// Filter-Funktion (Einkaufsliste / Rot)
 const filterCheckbox = document.getElementById('showMissingOnly');
 if(filterCheckbox) {
     filterCheckbox.addEventListener('change', (e) => {
@@ -102,16 +138,14 @@ if(filterCheckbox) {
     });
 }
 
-// 3. Globale Funktionen für die Buttons in den Karten
+// Globale Funktionen
 window.updateStock = async (id, amount) => {
     const itemRef = doc(db, "lagerbestand", id);
-    await updateDoc(itemRef, {
-        count: increment(amount)
-    });
+    await updateDoc(itemRef, { count: increment(amount) });
 };
 
 window.deleteItem = async (id) => {
-    if(confirm("Wirklich löschen?")) {
+    if(confirm("Löschen?")) {
         await deleteDoc(doc(db, "lagerbestand", id));
     }
 };
