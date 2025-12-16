@@ -12,14 +12,13 @@ body {
     background-color: var(--bg);
     color: var(--text);
     margin: 0;
-    /* Weniger Rand auf Handys, mehr auf Laptop */
     padding: 15px; 
 }
 
 .container {
     max-width: 800px;
     margin: 0 auto;
-    padding-bottom: 50px; /* Platz unten für Scrollen am Handy */
+    padding-bottom: 50px;
 }
 
 header {
@@ -49,7 +48,7 @@ h1 {
     gap: 10px;
     cursor: pointer;
     font-weight: 500;
-    width: 100%; /* Klickbereich vergrößern */
+    width: 100%;
 }
 
 input[type="checkbox"] {
@@ -57,6 +56,74 @@ input[type="checkbox"] {
     height: 20px;
     accent-color: var(--primary);
 }
+
+/* --- Neue Styles für Kategorien --- */
+
+select {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: white;
+    outline: none;
+    cursor: pointer;
+}
+
+.category-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* --- WICHTIG: Das hier ist neu für die Icons! --- */
+.tab-btn {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 14px;
+    transition: all 0.2s;
+    color: var(--text);
+    /* Damit Text und Icon schön nebeneinander sind */
+    display: flex;
+    align-items: center;
+    gap: 8px; 
+}
+
+/* Das Icon im Tab-Button */
+.tab-btn i {
+    font-size: 1.1em; /* Icon etwas größer */
+    opacity: 0.8;
+}
+
+.tab-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(108, 92, 231, 0.3);
+}
+
+.tab-btn.active i {
+    opacity: 1; /* Volle Deckkraft beim aktiven Tab */
+}
+
+.category-badge {
+    font-size: 0.8em;
+    color: #888;
+    background: #f1f2f6;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    display: inline-block;
+    font-weight: 500;
+}
+
 
 /* --- Eingabefeld (Hinzufügen) --- */
 .input-group {
@@ -67,7 +134,6 @@ input[type="checkbox"] {
     display: flex;
     gap: 10px;
     margin-bottom: 30px;
-    /* Standard für Laptop: Nebeneinander */
     flex-direction: row; 
     align-items: center;
 }
@@ -84,7 +150,7 @@ input[type="text"]:focus, input[type="number"]:focus {
     border-color: var(--primary);
 }
 
-#itemName { flex-grow: 1; } /* Nimmt restlichen Platz */
+#itemName { flex-grow: 1; }
 #itemCount { width: 70px; text-align: center; }
 
 #addBtn {
@@ -99,13 +165,12 @@ input[type="text"]:focus, input[type="number"]:focus {
     display: flex;
     align-items: center;
     gap: 8px;
-    white-space: nowrap; /* Text nicht umbrechen */
+    white-space: nowrap;
 }
 
 /* --- Lager Liste (Grid) --- */
 .grid-layout {
     display: grid;
-    /* Automatische Anpassung: Mindestens 100% Breite am Handy, sonst Spalten */
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
     gap: 15px;
 }
@@ -128,7 +193,7 @@ input[type="text"]:focus, input[type="number"]:focus {
     margin-bottom: 15px;
     font-weight: bold;
     font-size: 1.1em;
-    word-break: break-word; /* Lange Wörter umbrechen */
+    word-break: break-word;
 }
 
 .delete-btn {
@@ -152,7 +217,7 @@ input[type="text"]:focus, input[type="number"]:focus {
 .control-btn {
     background: white;
     color: var(--text);
-    width: 40px; /* Größere Buttons für Touch */
+    width: 40px;
     height: 40px;
     border: none;
     border-radius: 8px;
@@ -171,7 +236,6 @@ input[type="text"]:focus, input[type="number"]:focus {
     font-size: 1.2em;
 }
 
-/* --- Roter Bereich (Leer) --- */
 .item-card.out-of-stock {
     border: 2px solid var(--danger);
     background-color: var(--danger-bg);
@@ -179,74 +243,46 @@ input[type="text"]:focus, input[type="number"]:focus {
 .item-card.out-of-stock .count-display {
     color: var(--danger);
     font-weight: 900;
-    font-size: 1em; /* Text etwas kleiner,
-
+    font-size: 1em;
 }
-/* --- Neue Styles für Kategorien --- */
-
-/* Das Dropdown Auswahlfeld */
-select {
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 16px;
-    background-color: white;
-    outline: none;
-    cursor: pointer;
+.item-card.out-of-stock .control-btn:first-child {
+    opacity: 0.5;
+    pointer-events: none;
 }
 
-/* Container für die Tabs */
-.category-tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    overflow-x: auto; /* Erlaubt seitliches Scrollen auf kleinen Handys */
-    padding-bottom: 5px; /* Platz für Scrollbalken */
-    -webkit-overflow-scrolling: touch; /* Weiches Scrollen auf iPhone */
+.grid-layout.filter-active .item-card:not(.out-of-stock) {
+    display: none;
 }
 
-/* Die Tab Buttons */
-.tab-btn {
-    background: white;
-    border: 1px solid #ddd;
-    padding: 8px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    white-space: nowrap; /* Text nicht umbrechen */
-    font-size: 14px;
-    transition: all 0.2s;
-    color: var(--text);
-}
-
-/* Wenn ein Tab aktiv ist */
-.tab-btn.active {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-    font-weight: bold;
-    box-shadow: 0 2px 5px rgba(108, 92, 231, 0.3);
-}
-
-/* Kleiner Badge auf der Karte für die Kategorie */
-.category-badge {
-    font-size: 0.8em;
-    color: #888;
-    background: #f1f2f6;
-    padding: 2px 8px;
-    border-radius: 4px;
-    margin-bottom: 5px;
-    display: inline-block;
-}
-
-/* Mobile Anpassung für das Dropdown */
+/* ========================================= */
+/* === MOBILE OPTIMIERUNG (Media Queries) === */
+/* ========================================= */
 @media (max-width: 600px) {
-    #itemCategory {
+    .container {
         width: 100%;
+        padding: 0;
+    }
+    h1 { font-size: 1.5rem; }
+
+    .input-group {
+        flex-direction: column;
+        padding: 15px;
+        align-items: stretch;
+    }
+
+    #itemName, #itemCategory, #itemCount, #addBtn {
+        width: 100%;
+        box-sizing: border-box;
         height: 45px;
-        margin-bottom: 0;
+        margin-bottom: 0; /* Reset margin for mobile */
+    }
+
+    #addBtn {
+        justify-content: center;
+        margin-top: 5px;
+    }
+
+    .grid-layout {
+        grid-template-columns: 1fr;
     }
 }
-
-
-
-    
