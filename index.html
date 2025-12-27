@@ -72,11 +72,20 @@
                 <option value="Sonstiges">Sonstiges</option>
             </select>
 
-            <input type="hidden" id="itemImage">
+            <select id="itemShop">
+    <option value="">Laden?</option> <option value="Rossmann">Rossmann</option>
+    <option value="dm">dm</option>
+    <option value="Rewe">Rewe</option>
+    <option value="Edeka">Edeka</option>
+    <option value="Aldi">Aldi</option>
+    <option value="Lidl">Lidl</option>
+    <option value="Kaufland">Kaufland</option>
+    <option value="Apotheke">Apotheke</option>
+    <option value="Sonstige">Sonstige</option>
+</select>
 
-            <input type="number" id="itemCount" placeholder="Menge" value="1">
-            <button id="addBtn"><i class="fas fa-plus"></i></button>
-        </div>
+<input type="number" id="itemCount" placeholder="Menge" value="1">
+<button id="addBtn"><i class="fas fa-plus"></i></button>
 
         <div id="inventory-list" class="grid-layout">
             </div>
