@@ -1,4 +1,6 @@
-/* --- 1. Variablen definieren (Standard = Hell) --- */
+/* ========================================= */
+/* === 1. BASIS & VARIABLEN === */
+/* ========================================= */
 :root {
     --primary: #6c5ce7;
     --bg: #f5f6fa;
@@ -20,7 +22,7 @@ body {
 }
 
 .container {
-    max-width: 800px;
+    max-width: 900px; /* Etwas breiter für Desktop */
     margin: 0 auto;
     padding-bottom: 50px;
 }
@@ -28,6 +30,10 @@ body {
 header {
     text-align: center;
     margin-bottom: 30px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 h1 {
@@ -35,44 +41,11 @@ h1 {
     margin: 0;
 }
 
-/* --- Filter Bereich --- */
-.filter-area {
-    background: var(--card-bg);
-    padding: 15px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-    display: flex;
-    align-items: center;
-}
+/* ========================================= */
+/* === 2. FILTER & TABS === */
+/* ========================================= */
 
-.filter-area label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    font-weight: 500;
-    width: 100%;
-}
-
-input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    accent-color: var(--primary);
-}
-
-/* --- Neue Styles für Kategorien --- */
-
-select {
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 16px;
-    background-color: white;
-    outline: none;
-    cursor: pointer;
-}
-
+/* --- Kategorie Tabs --- */
 .category-tabs {
     display: flex;
     gap: 10px;
@@ -82,10 +55,9 @@ select {
     -webkit-overflow-scrolling: touch;
 }
 
-/* --- WICHTIG: Das hier ist neu für die Icons! --- */
 .tab-btn {
-    background: white;
-    border: 1px solid #ddd;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
     padding: 8px 16px;
     border-radius: 20px;
     cursor: pointer;
@@ -93,17 +65,12 @@ select {
     font-size: 14px;
     transition: all 0.2s;
     color: var(--text);
-    /* Damit Text und Icon schön nebeneinander sind */
     display: flex;
     align-items: center;
     gap: 8px; 
 }
 
-/* Das Icon im Tab-Button */
-.tab-btn i {
-    font-size: 1.1em; /* Icon etwas größer */
-    opacity: 0.8;
-}
+.tab-btn i { font-size: 1.1em; opacity: 0.8; }
 
 .tab-btn.active {
     background: var(--primary);
@@ -112,24 +79,40 @@ select {
     font-weight: bold;
     box-shadow: 0 2px 5px rgba(108, 92, 231, 0.3);
 }
+.tab-btn.active i { opacity: 1; }
 
-.tab-btn.active i {
-    opacity: 1; /* Volle Deckkraft beim aktiven Tab */
+/* --- Filter Leiste (Checkbox & WhatsApp) --- */
+.filter-area {
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
-.category-badge {
-    font-size: 0.8em;
-    color: #888;
-    background: #f1f2f6;
-    padding: 2px 8px;
-    border-radius: 4px;
-    margin-bottom: 5px;
-    display: inline-block;
+.filter-area label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
     font-weight: 500;
 }
 
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary);
+}
 
-/* --- Eingabefeld (Hinzufügen) --- */
+/* ========================================= */
+/* === 3. EINGABEBEREICH (Der Fix!) === */
+/* ========================================= */
+
 .input-group {
     background: var(--card-bg);
     padding: 20px;
@@ -138,41 +121,86 @@ select {
     display: flex;
     gap: 10px;
     margin-bottom: 30px;
+    
+    /* Desktop: Alles in einer Reihe */
     flex-direction: row; 
-    align-items: center;
+    align-items: center; 
+    flex-wrap: wrap; /* Erlaubt Umbruch bei kleinen Laptops */
 }
 
-input[type="text"], input[type="number"] {
-    padding: 12px;
-    border: 1px solid #ddd;
+/* WICHTIG: Alle Eingabeelemente auf exakt gleiche Höhe zwingen */
+.input-group input, 
+.input-group select, 
+.input-group button {
+    height: 48px; /* Einheitliche Höhe */
+    box-sizing: border-box; /* Rahmen inklusive */
+    border: 1px solid var(--border);
     border-radius: 8px;
     font-size: 16px;
     outline: none;
+    margin: 0;
+    background-color: var(--input-bg);
+    color: var(--text);
 }
 
-input[type="text"]:focus, input[type="number"]:focus {
+/* Fokus Effekt */
+.input-group input:focus, 
+.input-group select:focus {
     border-color: var(--primary);
 }
 
-#itemName { flex-grow: 1; }
-#itemCount { width: 70px; text-align: center; }
+/* --- Spezifische Breiten für Desktop --- */
 
+/* Name bekommt am meisten Platz */
+#itemName { 
+    flex-grow: 2; 
+    min-width: 150px; 
+}
+
+/* Scan Button: Quadratisch */
+#scanBtn {
+    width: 48px !important;
+    flex: 0 0 48px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--text-muted);
+    color: white;
+    border: none;
+}
+
+/* Dropdowns teilen sich Platz */
+#itemCategory, #itemShop {
+    flex-grow: 1;
+    min-width: 110px;
+    cursor: pointer;
+}
+
+/* Menge ist schmal */
+#itemCount { 
+    width: 70px; 
+    text-align: center; 
+}
+
+/* Hinzufügen Button: Quadratisch und Lila */
 #addBtn {
+    width: 48px;
+    flex: 0 0 48px;
     background: var(--primary);
     color: white;
     border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
     display: flex;
     align-items: center;
-    gap: 8px;
-    white-space: nowrap;
+    justify-content: center;
+    cursor: pointer;
 }
+#addBtn:hover { opacity: 0.9; }
 
-/* --- Lager Liste (Grid) --- */
+
+/* ========================================= */
+/* === 4. LAGER LISTE (Karten) === */
+/* ========================================= */
 .grid-layout {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
@@ -187,7 +215,7 @@ input[type="text"]:focus, input[type="number"]:focus {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: transform 0.2s;
+    transition: transform 0.2s, background-color 0.3s;
 }
 
 .item-header {
@@ -200,6 +228,35 @@ input[type="text"]:focus, input[type="number"]:focus {
     word-break: break-word;
 }
 
+/* Badges */
+.badge-container {
+    margin-bottom: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.category-badge {
+    font-size: 0.8em;
+    color: #888;
+    background: #f1f2f6;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.shop-badge {
+    font-size: 0.75em;
+    color: white;
+    background-color: #00b894;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Controls */
 .delete-btn {
     background: transparent;
     border: none;
@@ -217,6 +274,8 @@ input[type="text"]:focus, input[type="number"]:focus {
     border-radius: 10px;
     padding: 5px;
 }
+/* Im Darkmode Controls Hintergrund anpassen */
+body.dark-mode .controls { background: #1e272e; }
 
 .control-btn {
     background: white;
@@ -232,6 +291,8 @@ input[type="text"]:focus, input[type="number"]:focus {
     cursor: pointer;
     font-size: 1.1em;
 }
+/* Im Darkmode Button Hintergrund anpassen */
+body.dark-mode .control-btn { background: #4b6584; color: white; }
 
 .control-btn:active { transform: scale(0.95); }
 
@@ -240,6 +301,7 @@ input[type="text"]:focus, input[type="number"]:focus {
     font-size: 1.2em;
 }
 
+/* Rote Karten (Leer) */
 .item-card.out-of-stock {
     border: 2px solid var(--danger);
     background-color: var(--danger-bg);
@@ -254,183 +316,18 @@ input[type="text"]:focus, input[type="number"]:focus {
     pointer-events: none;
 }
 
+/* Filter Logik */
 .grid-layout.filter-active .item-card:not(.out-of-stock) {
     display: none;
 }
 
 /* ========================================= */
-/* === MOBILE OPTIMIERUNG (Media Queries) === */
+/* === 5. EXTRAS (Scanner, WhatsApp, Darkmode) === */
 /* ========================================= */
-@media (max-width: 600px) {
-    .container {
-        width: 100%;
-        padding: 0;
-    }
-    h1 { font-size: 1.5rem; }
 
-    .input-group {
-        flex-direction: column;
-        padding: 15px;
-        align-items: stretch;
-    }
-
-    #itemName, #itemCategory, #itemCount, #addBtn {
-        width: 100%;
-        box-sizing: border-box;
-        height: 45px;
-        margin-bottom: 0; /* Reset margin for mobile */
-    }
-
-    #addBtn {
-        justify-content: center;
-        margin-top: 5px;
-    }
-
-    .grid-layout {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* --- 2. Variablen überschreiben für Dark Mode --- */
-body.dark-mode {
-    --bg: #1e272e;        /* Sehr dunkles Grau-Blau */
-    --card-bg: #2d3436;   /* Etwas helleres Dunkelgrau */
-    --text: #dfe6e9;      /* Fast Weiß (angenehmer als reines Weiß) */
-    --text-muted: #b2bec3;
-    --danger: #ff6b81;    /* Helleres Rot für besseren Kontrast */
-    --danger-bg: rgba(255, 71, 87, 0.2); /* Transparentes Rot */
-    --input-bg: #2d3436;
-    --border: #4b6584;
-}
-
-/* Weicher Übergang beim Umschalten */
-body, .item-card, input, select, button {
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
-
-/* --- 3. Styling für den Schalter im Header --- */
-header {
-    text-align: center;
-    margin-bottom: 30px;
-    position: relative; /* Wichtig für die Positionierung des Buttons */
-    display: flex;      /* Damit Titel und Button nebeneinander können */
-    justify-content: center;
-    align-items: center;
-}
-
-#darkModeToggle {
-    position: absolute;
-    right: 0;
-    top: 0;
-    background: transparent;
-    border: 2px solid var(--text); /* Passt sich der Textfarbe an */
-    color: var(--text);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#darkModeToggle:hover {
-    background: var(--text);
-    color: var(--bg); /* Invertiert beim Drüberfahren */
-}
-
-/* --- 4. Inputs im Darkmode anpassen --- */
-input, select {
-    background-color: var(--input-bg);
-    color: var(--text);
-    border-color: var(--border);
-}
-
-/* Kategorie Tabs im Darkmode */
-.tab-btn {
-    background-color: var(--card-bg);
-    color: var(--text);
-    border-color: var(--border);
-}
-
-/* --- Barcode Scanner Styles --- */
-
-/* Der Scan-Button neben dem Input */
-#scanBtn {
-    background: var(--text-muted); /* Dezentes Grau */
-    color: white;
-    padding: 0 15px; /* Etwas schmaler */
-    width: auto !important; /* Überschreibt die Mobile-Breite */
-}
-
-/* Das Vollbild-Overlay */
-#scanner-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9); /* Fast schwarz */
-    z-index: 1000; /* Ganz oben */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Klasse zum Verstecken */
-.hidden {
-    display: none !important;
-}
-
-/* Die Box in der Mitte */
-.scanner-container {
-    width: 90%;
-    max-width: 500px;
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-    text-align: center;
-}
-
-/* Der Bereich für das Video */
-#reader {
-    width: 100%;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 20px;
-}
-
-/* Button zum Schließen */
-#closeScanner {
-    background: var(--danger);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-/* Darkmode Anpassung für Scanner */
-body.dark-mode .scanner-container {
-    background: var(--card-bg);
-    color: var(--text);
-}
-
-/* --- WhatsApp Button Styles --- */
-
-/* Damit Checkbox und Button schön nebeneinander stehen */
-.filter-area {
-    display: flex;
-    justify-content: space-between; /* Links Checkbox, rechts Button */
-    align-items: center;
-    flex-wrap: wrap; /* Umbruch auf kleinen Handys */
-    gap: 15px;
-}
-
+/* WhatsApp Button */
 .whatsapp-btn {
-    background-color: #25D366; /* Original WhatsApp Grün */
+    background-color: #25D366;
     color: white;
     border: none;
     padding: 10px 15px;
@@ -441,53 +338,94 @@ body.dark-mode .scanner-container {
     align-items: center;
     gap: 8px;
     font-size: 14px;
-    transition: transform 0.2s, background-color 0.2s;
-    text-decoration: none; /* Falls wir es als Link nutzen */
+    text-decoration: none;
 }
-
-.whatsapp-btn:hover {
-    background-color: #128C7E; /* Dunkleres Grün beim Drüberfahren */
-    transform: scale(1.05);
-}
-
-.whatsapp-btn i {
-    font-size: 1.2em;
-}
-
-/* Anpassung für Mobile: Button auf volle Breite */
+.whatsapp-btn:hover { background-color: #128C7E; transform: scale(1.05); }
 @media (max-width: 600px) {
-    .whatsapp-btn {
+    .whatsapp-btn { width: 100%; justify-content: center; }
+}
+
+/* Scanner Overlay */
+#scanner-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.9); z-index: 1000;
+    display: flex; justify-content: center; align-items: center;
+}
+.hidden { display: none !important; }
+.scanner-container {
+    width: 90%; max-width: 500px; background: white;
+    padding: 20px; border-radius: 15px; text-align: center;
+}
+body.dark-mode .scanner-container { background: var(--card-bg); color: var(--text); }
+#reader { width: 100%; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+#closeScanner {
+    background: var(--danger); color: white; border: none;
+    padding: 10px 20px; border-radius: 8px; font-size: 16px; cursor: pointer;
+}
+
+/* Dark Mode Toggle */
+#darkModeToggle {
+    position: absolute; right: 0; top: 0;
+    background: transparent; border: 2px solid var(--text); color: var(--text);
+    width: 40px; height: 40px; border-radius: 50%;
+    cursor: pointer; font-size: 1.2rem;
+    display: flex; align-items: center; justify-content: center;
+}
+#darkModeToggle:hover { background: var(--text); color: var(--bg); }
+
+/* ========================================= */
+/* === 6. MOBILE OPTIMIERUNG (Überschreiben) === */
+/* ========================================= */
+@media (max-width: 768px) {
+    .container {
         width: 100%;
-        justify-content: center;
+        padding: 0;
     }
-}
+    h1 { font-size: 1.5rem; }
 
-/* --- Shop Badge Design --- */
-.shop-badge {
-    font-size: 0.75em;
-    color: white;
-    background-color: #00b894; /* Ein schönes Mint-Grün */
-    padding: 2px 6px;
-    border-radius: 4px;
-    margin-right: 5px;
-    display: inline-block;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Anpassung, damit Kategorie und Shop Badge gut nebeneinander aussehen */
-.badge-container {
-    margin-bottom: 5px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-}
-
-/* Mobile: Auf kleinen Handys sollen die Selects untereinander sein, wenn kein Platz ist */
-@media (max-width: 600px) {
-    #itemShop {
-        width: 100%;
-        margin-bottom: 5px; /* Etwas Abstand */
+    /* Eingabebereich untereinander stapeln */
+    .input-group {
+        flex-direction: column;
+        padding: 15px;
+        align-items: stretch;
     }
+
+    /* Alle Elemente volle Breite auf Handy */
+    #itemName, #scanBtn, #itemCategory, #itemShop, #itemCount, #addBtn {
+        width: 100% !important;
+        flex: none;
+        margin-bottom: 10px;
+    }
+
+    /* Scan Button auf Handy: Normaler Button statt Quadrat */
+    #scanBtn {
+        background: var(--primary); /* Farbe für Sichtbarkeit */
+        color: white;
+        border: none;
+    }
+    
+    /* Letztes Element ohne Abstand nach unten */
+    #addBtn { margin-bottom: 0; }
+
+    /* Grid einspaltig */
+    .grid-layout { grid-template-columns: 1fr; }
+}
+
+/* ========================================= */
+/* === 7. DARK MODE THEME === */
+/* ========================================= */
+body.dark-mode {
+    --bg: #1e272e;
+    --card-bg: #2d3436;
+    --text: #dfe6e9;
+    --text-muted: #b2bec3;
+    --danger: #ff6b81;
+    --danger-bg: rgba(255, 71, 87, 0.2);
+    --input-bg: #2d3436;
+    --border: #4b6584;
+}
+
+/* Transition für sanften Wechsel */
+body, .item-card, input, select, button, .control-btn, .controls {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
