@@ -461,3 +461,33 @@ body.dark-mode .scanner-container {
         justify-content: center;
     }
 }
+
+/* --- Shop Badge Design --- */
+.shop-badge {
+    font-size: 0.75em;
+    color: white;
+    background-color: #00b894; /* Ein schönes Mint-Grün */
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-right: 5px;
+    display: inline-block;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Anpassung, damit Kategorie und Shop Badge gut nebeneinander aussehen */
+.badge-container {
+    margin-bottom: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+/* Mobile: Auf kleinen Handys sollen die Selects untereinander sein, wenn kein Platz ist */
+@media (max-width: 600px) {
+    #itemShop {
+        width: 100%;
+        margin-bottom: 5px; /* Etwas Abstand */
+    }
+}
